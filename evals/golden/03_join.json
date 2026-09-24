@@ -1,0 +1,82 @@
+[
+  {
+    "id": "products_with_category_name",
+    "category": "join",
+    "question": "Show every product along with its category name.",
+    "golden_sql": "SELECT p.id, p.name AS product_name, c.name AS category_name FROM products p JOIN categories c ON p.category_id = c.id ORDER BY p.id",
+    "expect": { "row_count": 200, "columns": ["id", "product_name", "category_name"] },
+    "should_be_flagged": false,
+    "difficulty": "easy",
+    "notes": "Basic 2-table INNER JOIN."
+  },
+  {
+    "id": "orders_with_customer_name",
+    "category": "join",
+    "question": "List all orders with the customer's name.",
+    "golden_sql": "SELECT o.id AS order_id, c.first_name, c.last_name, o.status, o.total FROM orders o JOIN customers c ON o.customer_id = c.id ORDER BY o.id",
+    "expect": { "row_count": 200, "columns": ["order_id", "first_name", "last_name", "status", "total"] },
+    "should_be_flagged": false,
+    "difficulty": "easy",
+    "notes": "Classic order-customer JOIN."
+  },
+  {
+    "id": "order_items_with_product_and_order",
+    "category": "join",
+    "question": "Show each order item with the product name and order id.",
+    "golden_sql": "SELECT oi.id, oi.order_id, p.name AS product_name, oi.quantity, oi.unit_price FROM order_items oi JOIN products p ON oi.product_id = p.id ORDER BY oi.id",
+    "expect": { "row_count": "approx_500", "columns": ["id", "order_id", "product_name", "quantity", "unit_price"] },
+    "should_be_flagged": false,
+    "difficulty": "medium",
+    "notes": "Roughly 2.5 line items per order on average."
+  },
+  {
+    "id": "three_table_join_order_customer_product",
+    "category": "join",
+    "question": "Show order id, customer name, product name, and quantity for every order item.",
+    "golden_sql": "SELECT oi.order_id, c.first_name, p.name AS product_name, oi.quantity FROM order_items oi JOIN orders o ON oi.order_id = o.id JOIN customers c ON o.customer_id = c.id JOIN products p ON oi.product_id = p.id ORDER BY oi.order_id",
+    "expect": { "row_count": "approx_500", "columns": ["order_id", "first_name", "product_name", "quantity"] },
+    "should_be_flagged": false,
+    "difficulty": "hard",
+    "notes": "4-table JOIN through order_items."
+  },
+  {
+    "id": "orders_with_payments_3table",
+    "category": "join",
+    "question": "Which orders have completed payments, and what method was used?",
+    "golden_sql": "SELECT o.id AS order_id, o.status, pay.method, pay.amount FROM orders o JOIN payments pay ON pay.order_id = o.id WHERE pay.status = 'completed' ORDER BY o.id",
+    "expect": { "row_count": "approx_120", "columns": ["order_id", "status", "method", "amount"] },
+    "should_be_flagged": false,
+    "difficulty": "medium",
+    "notes": "JOIN with WHERE on joined table."
+  },
+  {
+    "id": "left_join_products_without_category",
+    "category": "join",
+    "question": "Show products and their category names, including products that have no category.",
+    "golden_sql": "SELECT p.id, p.name, c.name AS category_name FROM products p LEFT JOIN categories c ON p.category_id = c.id ORDER BY p.id",
+    "expect": { "row_count": 200, "columns": ["id", "name", "category_name"] },
+    "should_be_flagged": false,
+    "difficulty": "medium",
+    "notes": "LEFT JOIN preserves orphan rows. With seed data every product has a category, so this is essentially an INNER JOIN, but tests the LLM's choice."
+  },
+  {
+    "id": "orders_with_item_count",
+    "category": "join",
+    "question": "How many items are on each order?",
+    "golden_sql": "SELECT o.id AS order_id, COUNT(oi.id) AS item_count FROM orders o JOIN order_items oi ON oi.order_id = o.id GROUP BY o.id ORDER BY o.id",
+    "expect": { "row_count": 200, "columns": ["order_id", "item_count"] },
+    "should_be_flagged": false,
+    "difficulty": "medium",
+    "notes": "Tests JOIN + GROUP BY + COUNT in one query."
+  },
+  {
+    "id": "customers_with_their_orders",
+    "category": "join",
+    "question": "List customers and any orders they've placed, including customers who have not ordered.",
+    "golden_sql": "SELECT c.id AS customer_id, c.first_name, c.last_name, o.id AS order_id, o.status FROM customers c LEFT JOIN orders o ON o.customer_id = c.id ORDER BY c.id, o.id",
+    "expect": { "row_count": "approx_200", "columns": ["customer_id", "first_name", "last_name", "order_id", "status"] },
+    "should_be_flagged": false,
+    "difficulty": "medium",
+    "notes": "LEFT JOIN from the 'one' side. The seeded distribution means most customers have placed exactly one order, so row count ≈ 200-220."
+  }
+]

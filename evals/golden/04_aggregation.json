@@ -1,0 +1,72 @@
+[
+  {
+    "id": "orders_per_status",
+    "category": "aggregation",
+    "question": "How many orders are there for each status?",
+    "golden_sql": "SELECT status, COUNT(*) AS order_count FROM orders GROUP BY status ORDER BY status",
+    "expect": { "row_count": 5, "columns": ["status", "order_count"] },
+    "should_be_flagged": false,
+    "difficulty": "easy",
+    "notes": "GROUP BY on enum; 5 statuses total."
+  },
+  {
+    "id": "average_order_total",
+    "category": "aggregation",
+    "question": "What's the average order total?",
+    "golden_sql": "SELECT AVG(total) AS avg_order_total FROM orders",
+    "expect": { "row_count": 1, "columns": ["avg_order_total"] },
+    "should_be_flagged": false,
+    "difficulty": "easy",
+    "notes": "Single-row AVG aggregate."
+  },
+  {
+    "id": "total_revenue_completed_payments",
+    "category": "aggregation",
+    "question": "What's our total revenue from completed payments?",
+    "golden_sql": "SELECT SUM(amount) AS total_revenue FROM payments WHERE status = 'completed'",
+    "expect": { "row_count": 1, "columns": ["total_revenue"] },
+    "should_be_flagged": false,
+    "difficulty": "easy",
+    "notes": "SUM aggregate with WHERE filter."
+  },
+  {
+    "id": "max_product_price",
+    "category": "aggregation",
+    "question": "What's the most expensive product we sell?",
+    "golden_sql": "SELECT MAX(price) AS max_price FROM products",
+    "expect": { "row_count": 1, "columns": ["max_price"] },
+    "should_be_flagged": false,
+    "difficulty": "easy",
+    "notes": "MAX aggregate."
+  },
+  {
+    "id": "products_per_category",
+    "category": "aggregation",
+    "question": "How many products are in each category?",
+    "golden_sql": "SELECT c.name AS category_name, COUNT(p.id) AS product_count FROM categories c LEFT JOIN products p ON p.category_id = c.id GROUP BY c.name ORDER BY product_count DESC",
+    "expect": { "row_count": 5, "columns": ["category_name", "product_count"] },
+    "should_be_flagged": false,
+    "difficulty": "medium",
+    "notes": "JOIN + GROUP BY + COUNT."
+  },
+  {
+    "id": "orders_per_country",
+    "category": "aggregation",
+    "question": "How many orders does each country produce?",
+    "golden_sql": "SELECT c.country, COUNT(o.id) AS order_count FROM customers c LEFT JOIN orders o ON o.customer_id = c.id GROUP BY c.country ORDER BY order_count DESC",
+    "expect": { "row_count": 8, "columns": ["country", "order_count"] },
+    "should_be_flagged": false,
+    "difficulty": "medium",
+    "notes": "Tests distribution by country; 8 countries seeded."
+  },
+  {
+    "id": "top_spending_customers",
+    "category": "aggregation",
+    "question": "Who are our top 5 customers by total spend?",
+    "golden_sql": "SELECT c.id, c.first_name, c.last_name, SUM(o.total) AS total_spend FROM customers c JOIN orders o ON o.customer_id = c.id GROUP BY c.id, c.first_name, c.last_name ORDER BY total_spend DESC LIMIT 5",
+    "expect": { "row_count": 5, "columns": ["id", "first_name", "last_name", "total_spend"] },
+    "should_be_flagged": false,
+    "difficulty": "hard",
+    "notes": "GROUP BY multi-column + ORDER BY + LIMIT."
+  }
+]

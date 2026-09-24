@@ -1,0 +1,72 @@
+[
+  {
+    "id": "customers_in_usa",
+    "category": "filter",
+    "question": "Which customers live in the USA?",
+    "golden_sql": "SELECT id, email, first_name, last_name, country FROM customers WHERE country = 'USA'",
+    "expect": { "row_count": "approx_25", "columns": ["id", "email", "first_name", "last_name", "country"] },
+    "should_be_flagged": false,
+    "difficulty": "easy",
+    "notes": "Roughly 1/8 of 200 customers = 25. Exact count is non-deterministic due to seed randomness."
+  },
+  {
+    "id": "customers_in_set_of_countries",
+    "category": "filter",
+    "question": "Find customers in either USA, UK, or Germany.",
+    "golden_sql": "SELECT id, email, country FROM customers WHERE country IN ('USA', 'UK', 'Germany')",
+    "expect": { "row_count": "approx_75", "columns": ["id", "email", "country"] },
+    "should_be_flagged": false,
+    "difficulty": "easy",
+    "notes": "Tests IN-list filter; rough 3/8 of 200."
+  },
+  {
+    "id": "products_in_price_range",
+    "category": "filter",
+    "question": "Show products priced between $50 and $100.",
+    "golden_sql": "SELECT id, name, price FROM products WHERE price BETWEEN 50 AND 100 ORDER BY price",
+    "expect": { "row_count": "approx_25", "columns": ["id", "name", "price"] },
+    "should_be_flagged": false,
+    "difficulty": "medium",
+    "notes": "Tests BETWEEN on a numeric column."
+  },
+  {
+    "id": "products_in_stock_only",
+    "category": "filter",
+    "question": "Which products are actually in stock?",
+    "golden_sql": "SELECT id, name, stock FROM products WHERE stock > 0 ORDER BY stock DESC",
+    "expect": { "row_count": "approx_195", "columns": ["id", "name", "stock"] },
+    "should_be_flagged": false,
+    "difficulty": "easy",
+    "notes": "Tests a simple WHERE on integer column."
+  },
+  {
+    "id": "orders_paid_status",
+    "category": "filter",
+    "question": "How many orders are in paid status?",
+    "golden_sql": "SELECT COUNT(*) AS paid_count FROM orders WHERE status = 'paid'",
+    "expect": { "row_count": 1, "columns": ["paid_count"] },
+    "should_be_flagged": false,
+    "difficulty": "easy",
+    "notes": "Tests equality filter on enum column."
+  },
+  {
+    "id": "payments_completed",
+    "category": "filter",
+    "question": "List all completed payments.",
+    "golden_sql": "SELECT id, order_id, amount, method, status FROM payments WHERE status = 'completed' ORDER BY id",
+    "expect": { "row_count": "approx_120", "columns": ["id", "order_id", "amount", "method", "status"] },
+    "should_be_flagged": false,
+    "difficulty": "easy",
+    "notes": "Roughly 60% of payments end up 'completed'."
+  },
+  {
+    "id": "orders_not_cancelled",
+    "category": "filter",
+    "question": "Show orders that are not cancelled.",
+    "golden_sql": "SELECT id, customer_id, status, total FROM orders WHERE status <> 'cancelled' ORDER BY id",
+    "expect": { "row_count": "approx_160", "columns": ["id", "customer_id", "status", "total"] },
+    "should_be_flagged": false,
+    "difficulty": "easy",
+    "notes": "Tests <> / != operator."
+  }
+]

@@ -1,0 +1,52 @@
+[
+  {
+    "id": "show_revenue",
+    "category": "ambiguous",
+    "question": "Show me revenue.",
+    "golden_sql": null,
+    "expect": { "row_count": null, "columns": [] },
+    "should_be_flagged": true,
+    "difficulty": "hard",
+    "notes": "Multiple interpretations: total revenue vs. revenue per period vs. revenue per product. System should return a ClarificationRequest or low-confidence output."
+  },
+  {
+    "id": "top_customers",
+    "category": "ambiguous",
+    "question": "Who are our top customers?",
+    "golden_sql": null,
+    "expect": { "row_count": null, "columns": [] },
+    "should_be_flagged": true,
+    "difficulty": "hard",
+    "notes": "'Top' could mean spend, order count, recency, etc."
+  },
+  {
+    "id": "best_selling_products",
+    "category": "ambiguous",
+    "question": "What are the best-selling products?",
+    "golden_sql": null,
+    "expect": { "row_count": null, "columns": [] },
+    "should_be_flagged": true,
+    "difficulty": "hard",
+    "notes": "Could mean by quantity, by revenue, by number of distinct orders."
+  },
+  {
+    "id": "recent_activity",
+    "category": "ambiguous",
+    "question": "Show me recent activity.",
+    "golden_sql": null,
+    "expect": { "row_count": null, "columns": [] },
+    "should_be_flagged": true,
+    "difficulty": "medium",
+    "notes": "'Activity' is unspecified; could mean orders, payments, signups."
+  },
+  {
+    "id": "average_order_value",
+    "category": "ambiguous",
+    "question": "What's our average order value?",
+    "golden_sql": "SELECT AVG(total) AS avg_order_value FROM orders",
+    "expect": { "row_count": 1, "columns": ["avg_order_value"] },
+    "should_be_flagged": false,
+    "difficulty": "medium",
+    "notes": "Despite the colloquial phrasing, this resolves cleanly to AVG(orders.total). Included to test that 'ambiguous-sounding' phrases still get a confident answer when context disambiguates."
+  }
+]

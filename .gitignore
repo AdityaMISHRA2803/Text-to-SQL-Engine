@@ -1,0 +1,178 @@
+# =============================================================================
+# Environment & secrets
+# =============================================================================
+# Real env files — keep .env.example as the template (committed).
+.env
+.env.*
+!.env.example
+.envrc
+*.env.local
+.env.*.local
+
+# Raw secret material — keys, certs, tokens, credentials blobs.
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+*.pfx
+*.p8
+*.pkcs8
+*.pkcs12
+*.asc
+*.gpg
+*.secret
+*.secrets
+secrets/
+secrets.yml
+secrets.yaml
+credentials/
+credentials.json
+credentials.yml
+credentials.yaml
+service-account*.json
+gha-creds-*.json
+google-credentials.json
+aws-credentials*
+.netrc
+.docker/config.json
+.kube/config
+
+# SSH / GPG home dirs and known hosts.
+.ssh/
+.gnupg/
+
+# =============================================================================
+# Kimchi ferment working files (worktree, docs, status, plans)
+# =============================================================================
+.kimchi/
+
+# =============================================================================
+# Python — build, distribution, bytecode
+# =============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.python-version
+
+# =============================================================================
+# Test artifacts & caches
+# =============================================================================
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+coverage/
+.tox/
+.nox/
+.cache
+nosetests.xml
+test-results/
+junit*.xml
+playwright-report/
+playwright/.cache/
+
+# Type checkers / linters / formatters
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+.ruff_cache/
+.eslintcache
+.stylelintcache
+
+# =============================================================================
+# IDEs & editors
+# =============================================================================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+.classpath
+
+# =============================================================================
+# OS noise
+# =============================================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# =============================================================================
+# Logs & runtime dumps
+# =============================================================================
+*.log
+logs/
+*.pid
+*.seed
+*.pid.lock
+pids/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# =============================================================================
+# Local data — Docker volumes, DB dumps, testcontainers caches
+# =============================================================================
+docker-data/
+data/
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+postgres-data/
+
+# =============================================================================
+# Jupyter / IPython
+# =============================================================================
+.ipynb_checkpoints/
+profile_default/
+ipython_config.py
+
+# =============================================================================
+# Misc
+# =============================================================================
+*.bak
+*.tmp
+*.orig
+*.rej
+.tmp/

@@ -1,0 +1,72 @@
+[
+  {
+    "id": "count_all_customers",
+    "category": "simple_lookup",
+    "question": "How many customers are there in total?",
+    "golden_sql": "SELECT COUNT(*) AS customer_count FROM customers",
+    "expect": { "row_count": 1, "columns": ["customer_count"] },
+    "should_be_flagged": false,
+    "difficulty": "easy",
+    "notes": "Trivial COUNT(*) sanity check."
+  },
+  {
+    "id": "count_all_products",
+    "category": "simple_lookup",
+    "question": "How many products do we have?",
+    "golden_sql": "SELECT COUNT(*) AS product_count FROM products",
+    "expect": { "row_count": 1, "columns": ["product_count"] },
+    "should_be_flagged": false,
+    "difficulty": "easy",
+    "notes": "Trivial COUNT(*) sanity check."
+  },
+  {
+    "id": "list_all_categories",
+    "category": "simple_lookup",
+    "question": "Show me every category we sell.",
+    "golden_sql": "SELECT id, name, slug FROM categories ORDER BY id",
+    "expect": { "row_count": 5, "columns": ["id", "name", "slug"] },
+    "should_be_flagged": false,
+    "difficulty": "easy",
+    "notes": "Categories are seeded with exactly 5 entries."
+  },
+  {
+    "id": "fetch_customer_by_id",
+    "category": "simple_lookup",
+    "question": "Get the customer with id 1.",
+    "golden_sql": "SELECT id, email, first_name, last_name, country, created_at FROM customers WHERE id = 1",
+    "expect": { "row_count": 1, "columns": ["id", "email", "first_name", "last_name", "country", "created_at"] },
+    "should_be_flagged": false,
+    "difficulty": "easy",
+    "notes": "Point-lookup by primary key."
+  },
+  {
+    "id": "fetch_product_by_id",
+    "category": "simple_lookup",
+    "question": "Look up product number 42.",
+    "golden_sql": "SELECT id, name, description, price, category_id, stock, created_at FROM products WHERE id = 42",
+    "expect": { "row_count": 1, "columns": ["id", "name", "description", "price", "category_id", "stock", "created_at"] },
+    "should_be_flagged": false,
+    "difficulty": "easy",
+    "notes": "Point-lookup on products."
+  },
+  {
+    "id": "fetch_order_by_id",
+    "category": "simple_lookup",
+    "question": "Show me order 100.",
+    "golden_sql": "SELECT id, customer_id, status, total, created_at, shipped_at FROM orders WHERE id = 100",
+    "expect": { "row_count": 1, "columns": ["id", "customer_id", "status", "total", "created_at", "shipped_at"] },
+    "should_be_flagged": false,
+    "difficulty": "easy",
+    "notes": "Point-lookup on orders."
+  },
+  {
+    "id": "distinct_countries",
+    "category": "simple_lookup",
+    "question": "What distinct countries do our customers live in?",
+    "golden_sql": "SELECT DISTINCT country FROM customers ORDER BY country",
+    "expect": { "row_count": 8, "columns": ["country"] },
+    "should_be_flagged": false,
+    "difficulty": "easy",
+    "notes": "8 countries seeded: USA, Canada, UK, Germany, France, Australia, Japan, Brazil."
+  }
+]

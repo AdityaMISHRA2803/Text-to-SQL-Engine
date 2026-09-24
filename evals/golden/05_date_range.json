@@ -1,0 +1,62 @@
+[
+  {
+    "id": "customers_recent_quarter",
+    "category": "date_range",
+    "question": "Which customers signed up in the last 90 days?",
+    "golden_sql": "SELECT id, email, first_name, country, created_at FROM customers WHERE created_at >= NOW() - INTERVAL '90 days' ORDER BY created_at DESC",
+    "expect": { "row_count": "approx_50", "columns": ["id", "email", "first_name", "country", "created_at"] },
+    "should_be_flagged": false,
+    "difficulty": "medium",
+    "notes": "Tests NOW() relative time window. Approx 90/365 ≈ 25% of 200 customers."
+  },
+  {
+    "id": "orders_last_30_days",
+    "category": "date_range",
+    "question": "How many orders have been placed in the last 30 days?",
+    "golden_sql": "SELECT COUNT(*) AS recent_order_count FROM orders WHERE created_at >= NOW() - INTERVAL '30 days'",
+    "expect": { "row_count": 1, "columns": ["recent_order_count"] },
+    "should_be_flagged": false,
+    "difficulty": "medium",
+    "notes": "DATE_TRUNC-like relative window."
+  },
+  {
+    "id": "orders_in_year_2025",
+    "category": "date_range",
+    "question": "Show all orders placed in 2025.",
+    "golden_sql": "SELECT id, customer_id, status, total, created_at FROM orders WHERE created_at >= '2025-01-01' AND created_at < '2026-01-01' ORDER BY created_at",
+    "expect": { "row_count": "approx_200", "columns": ["id", "customer_id", "status", "total", "created_at"] },
+    "should_be_flagged": false,
+    "difficulty": "medium",
+    "notes": "Half-open date interval; most seeded orders land in 2025 since 'now' is fixed at seed time."
+  },
+  {
+    "id": "products_created_recently",
+    "category": "date_range",
+    "question": "Which products were added in the last 60 days?",
+    "golden_sql": "SELECT id, name, price, created_at FROM products WHERE created_at >= NOW() - INTERVAL '60 days' ORDER BY created_at DESC",
+    "expect": { "row_count": "approx_33", "columns": ["id", "name", "price", "created_at"] },
+    "should_be_flagged": false,
+    "difficulty": "medium",
+    "notes": "Roughly 60/365 ≈ 16% of 200."
+  },
+  {
+    "id": "shipped_orders_older_than_7_days",
+    "category": "date_range",
+    "question": "Which shipped orders are older than 7 days?",
+    "golden_sql": "SELECT id, customer_id, status, shipped_at FROM orders WHERE status = 'shipped' AND shipped_at < NOW() - INTERVAL '7 days' ORDER BY shipped_at",
+    "expect": { "row_count": "approx_20", "columns": ["id", "customer_id", "status", "shipped_at"] },
+    "should_be_flagged": false,
+    "difficulty": "hard",
+    "notes": "Tests WHERE on nullable column with relative time."
+  },
+  {
+    "id": "payments_first_quarter_2025",
+    "category": "date_range",
+    "question": "What's the sum of payments received in Q1 2025?",
+    "golden_sql": "SELECT SUM(amount) AS q1_revenue FROM payments WHERE status = 'completed' AND created_at >= '2025-01-01' AND created_at < '2025-04-01'",
+    "expect": { "row_count": 1, "columns": ["q1_revenue"] },
+    "should_be_flagged": false,
+    "difficulty": "hard",
+    "notes": "Quarter-bounded date range with SUM aggregate."
+  }
+]

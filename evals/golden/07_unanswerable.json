@@ -1,0 +1,52 @@
+[
+  {
+    "id": "employees_count",
+    "category": "unanswerable",
+    "question": "How many employees do we have?",
+    "golden_sql": null,
+    "expect": { "row_count": null, "columns": [] },
+    "should_be_flagged": true,
+    "difficulty": "medium",
+    "notes": "Schema has no employees table. System should not invent one; hallucination detector should flag the resulting SQL."
+  },
+  {
+    "id": "warehouse_inventory",
+    "category": "unanswerable",
+    "question": "What's in our warehouses?",
+    "golden_sql": null,
+    "expect": { "row_count": null, "columns": [] },
+    "should_be_flagged": true,
+    "difficulty": "medium",
+    "notes": "No warehouse concept in schema."
+  },
+  {
+    "id": "social_media_followers",
+    "category": "unanswerable",
+    "question": "How many followers does our brand have on Twitter?",
+    "golden_sql": null,
+    "expect": { "row_count": null, "columns": [] },
+    "should_be_flagged": true,
+    "difficulty": "easy",
+    "notes": "No social-media data in schema."
+  },
+  {
+    "id": "weather_today",
+    "category": "unanswerable",
+    "question": "What's the weather like today?",
+    "golden_sql": null,
+    "expect": { "row_count": null, "columns": [] },
+    "should_be_flagged": true,
+    "difficulty": "easy",
+    "notes": "Out-of-domain entirely."
+  },
+  {
+    "id": "ceo_name",
+    "category": "unanswerable",
+    "question": "Who is the CEO?",
+    "golden_sql": null,
+    "expect": { "row_count": null, "columns": [] },
+    "should_be_flagged": true,
+    "difficulty": "easy",
+    "notes": "No HR / role / org-chart data."
+  }
+]

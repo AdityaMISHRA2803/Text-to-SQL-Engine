@@ -1,0 +1,109 @@
+services:
+  # ----------------------------------------------------------------
+  # Postgres 16 with the readonly role provisioned on first boot.
+  # ----------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: text2sql-postgres
+    environment:
+      POSTGRES_USER: text2sql
+      POSTGRES_PASSWORD: text2sql
+      POSTGRES_DB: text2sql
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # init scripts run *alphabetically* on first start (empty volume).
+      # Files here are idempotent (CREATE ROLE IF NOT EXISTS pattern).
+      - ./docker/postgres-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U text2sql -d text2sql"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ----------------------------------------------------------------
+  # One-shot seed: drops + recreates all tables, then inserts 200 rows
+  # per table using the deterministic Faker seed from text2sql.seed_dataset.
+  # Exits 0; never restarts.
+  # ----------------------------------------------------------------
+  seed:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: text2sql:latest
+    container_name: text2sql-seed
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg://text2sql:text2sql@postgres:5432/text2sql
+    command: ["python", "-m", "text2sql.seed_dataset"]
+    restart: "no"
+
+  # ----------------------------------------------------------------
+  # FastAPI service.
+  # ----------------------------------------------------------------
+  api:
+    image: text2sql:latest
+    container_name: text2sql-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+      seed:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: postgresql+psycopg://text2sql:text2sql@postgres:5432/text2sql
+      LLM_PROVIDER: ${LLM_PROVIDER:-openai}
+      LLM_MODEL: ${LLM_MODEL:-gpt-4o-mini}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    ports:
+      - "8000:8000"
+    command:
+      - uvicorn
+      - text2sql.api.app:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  # ----------------------------------------------------------------
+  # Streamlit frontend.
+  # ----------------------------------------------------------------
+  frontend:
+    image: text2sql:latest
+    container_name: text2sql-frontend
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      # Streamlit app reads API_BASE_URL to find the FastAPI service.
+      API_BASE_URL: http://api:8000
+      # Streamlit config — disable telemetry + file watcher (no source changes in prod).
+      STREAMLIT_BROWSER_GATHER_USAGE_STATS: "false"
+      STREAMLIT_SERVER_FILE_WATCHER_TYPE: "none"
+    ports:
+      - "8501:8501"
+    command:
+      - streamlit
+      - run
+      - frontend/app.py
+      - --server.port=8501
+      - --server.address=0.0.0.0
+      - --server.headless=true
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8501/_stcore/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+volumes:
+  pgdata:

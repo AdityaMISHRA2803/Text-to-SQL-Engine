@@ -1,0 +1,27 @@
+[
+  {
+    "question": "How many orders has each customer placed?",
+    "sql": "SELECT c.id, c.email, COUNT(o.id) AS order_count FROM customers c LEFT JOIN orders o ON o.customer_id = c.id GROUP BY c.id, c.email ORDER BY order_count DESC",
+    "description": "Customer-order aggregation with LEFT JOIN"
+  },
+  {
+    "question": "What is the total revenue per product category?",
+    "sql": "SELECT cat.name AS category, SUM(oi.quantity * oi.unit_price) AS revenue FROM categories cat JOIN products p ON p.category_id = cat.id JOIN order_items oi ON oi.product_id = p.id JOIN orders o ON o.id = oi.order_id WHERE o.status = 'paid' GROUP BY cat.name ORDER BY revenue DESC",
+    "description": "Multi-table join through products and order_items"
+  },
+  {
+    "question": "List the top 5 customers by total payment amount.",
+    "sql": "SELECT c.id, c.email, SUM(p.amount) AS total_paid FROM customers c JOIN orders o ON o.customer_id = c.id JOIN payments p ON p.order_id = o.id WHERE p.status = 'completed' GROUP BY c.id, c.email ORDER BY total_paid DESC LIMIT 5",
+    "description": "Order-payment aggregation per customer"
+  },
+  {
+    "question": "How many orders are in each status?",
+    "sql": "SELECT status, COUNT(*) AS count FROM orders GROUP BY status ORDER BY count DESC",
+    "description": "Simple GROUP BY on a categorical column"
+  },
+  {
+    "question": "Which products have never been ordered?",
+    "sql": "SELECT p.id, p.name FROM products p LEFT JOIN order_items oi ON oi.product_id = p.id WHERE oi.id IS NULL",
+    "description": "Anti-join via LEFT JOIN ... IS NULL"
+  }
+]
